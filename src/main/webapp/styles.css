@@ -1,0 +1,64 @@
+#container {
+    width: 50%; /* Độ rộng của khung chứa form */
+    margin: 0 auto; /* Để căn giữa form theo chiều ngang */
+    padding: 20px;
+}
+#formLogin {
+    width: 300px;
+    height: 300px;
+    margin: 50px auto;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    text-align: center;
+    background-color: whitesmoke;
+}
+
+input {
+    width: 200px;
+    height: 40px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    border: 1px solid gray;
+    padding-left: 20px;
+}
+
+#loginBtn {
+    width: 220px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    font-size: 15px;
+    background-color: darkgray;
+    cursor: pointer;
+}
+
+.container-dashboard {
+    margin: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.menu {
+    background-color: #ccc;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#addBtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
