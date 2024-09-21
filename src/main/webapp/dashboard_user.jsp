@@ -19,8 +19,8 @@
 
 <div class="menu">
     <ul>
-<%--        <li><a href="login?action=listRole">List role</a></li>--%>
-<%--        <li><a href="index.jsp">Log out</a></li>--%>
+        <li><a href="action?action=listRole">List role</a></li>
+        <li><a href="index.jsp">Log out</a></li>
     </ul>
 </div>
 

@@ -41,6 +41,26 @@ public class AccountRepository {
         return Optional.empty();
     }
 
+    public Optional<Account> findAccountByID(String id) throws SQLException, ClassNotFoundException {
+        Connection connection;
+        connection = ConnectDB.getInstance().getConnection();
+        String sql = "Select * from account where account_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            String account_id = resultSet.getString("account_id");
+            String full_name = resultSet.getString("full_name");
+            String pass = resultSet.getString("password");
+            String mail = resultSet.getString("email");
+            String phone = resultSet.getString("phone");
+            Integer status = resultSet.getInt("status");
+            Account account = new Account(account_id, full_name, pass, mail, phone, status);
+            return Optional.of(account);
+        }
+        return Optional.empty();
+    }
+
     public boolean addAccount(Account newAccount) throws SQLException, ClassNotFoundException {
         Connection connection = ConnectDB.getInstance().getConnection();
         try {
@@ -83,5 +103,47 @@ public class AccountRepository {
             accounts.add(account);
         }
         return accounts;
+    }
+
+    public List<Account> getListAccount(String id) throws SQLException, ClassNotFoundException {
+        List<Account> accounts = new ArrayList<>();
+        Connection connection = ConnectDB.getInstance().getConnection();
+        String sql = "SELECT * FROM account WHERE account_id <> ? AND status <> -1 ";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            String account_id = resultSet.getString("account_id");
+            String full_name = resultSet.getString("full_name");
+            String pass = resultSet.getString("password");
+            String mail = resultSet.getString("email");
+            String phone = resultSet.getString("phone");
+            Integer status = resultSet.getInt("status");
+            Account account = new Account(account_id, full_name, pass, mail, phone, status);
+            accounts.add(account);
+        }
+        return accounts;
+    }
+
+    public boolean deleteAccount(String accountID) throws SQLException, ClassNotFoundException {
+        Connection connection = ConnectDB.getInstance().getConnection();
+        String sql = "UPDATE account SET status = -1 WHERE account_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, accountID);
+        int rowAffected = preparedStatement.executeUpdate();
+        return rowAffected > 0;
+    }
+
+    public boolean updateAccount(Account account) throws SQLException, ClassNotFoundException {
+        Connection connection = ConnectDB.getInstance().getConnection();
+        String sql = "UPDATE account SET full_name = ?, email = ?, password = ?, phone = ? WHERE account_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, account.getFullName());
+        preparedStatement.setString(2, account.getEmail());
+        preparedStatement.setString(3, account.getPassword());
+        preparedStatement.setString(4, account.getPhone());
+        preparedStatement.setString(5, account.getAccountId());
+        int rowAffected = preparedStatement.executeUpdate();
+        return rowAffected > 0;
     }
 }

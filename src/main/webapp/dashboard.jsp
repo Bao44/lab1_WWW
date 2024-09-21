@@ -20,9 +20,9 @@
 <div class="menu">
     <ul>
         <li><a href="add_account.jsp">Add account</a></li>
-<%--        <li><a href="login?action=listRole">List role</a></li>--%>
-        <li><a href="action?action=listAllAccount">List Account</a></li>
-<%--        <li><a href="index.jsp">Log out</a></li>--%>
+        <li><a href="action?action=listRole">List role</a></li>
+        <li><a href="action?action=listAccount">List Account</a></li>
+        <li><a href="index.jsp">Log out</a></li>
     </ul>
 </div>
 

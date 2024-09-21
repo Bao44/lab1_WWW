@@ -8,8 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.edu.iuh.fit.lab_01.entyties.Account;
+import vn.edu.iuh.fit.lab_01.entyties.Role;
 import vn.edu.iuh.fit.lab_01.reponsitories.AccountRepository;
 import vn.edu.iuh.fit.lab_01.reponsitories.GrantAccessRepository;
+import vn.edu.iuh.fit.lab_01.reponsitories.RoleRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class ControllerServlet extends HttpServlet {
     private AccountRepository accountRepository = new AccountRepository();
     private GrantAccessRepository grantAccessRepository = new GrantAccessRepository();
+    private RoleRepository roleRepository = new RoleRepository();
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(true);
@@ -45,7 +48,7 @@ public class ControllerServlet extends HttpServlet {
                 newAccount.setStatus(1);
                 try {
                     rs = accountRepository.addAccount(newAccount);
-                    if(rs) {
+                    if (rs) {
                         PrintWriter out = resp.getWriter();
                         out.println("<script type=\"text/javascript\"> alert('Them account thanh cong!'); location='dashboard.jsp' </script>");
                     } else {
@@ -55,6 +58,28 @@ public class ControllerServlet extends HttpServlet {
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+                break;
+            case "updateAccount":
+                try {
+                    Boolean rsu = false;
+                    Account newAcc = new Account();
+                    newAcc.setAccountId(req.getParameter("accountID"));
+                    newAcc.setFullName(req.getParameter("fullName"));
+                    newAcc.setPassword(req.getParameter("password"));
+                    newAcc.setEmail(req.getParameter("email"));
+                    newAcc.setPhone(req.getParameter("phone"));
+                    rsu = accountRepository.updateAccount(newAcc);
+                    if (rsu) {
+                        PrintWriter out = resp.getWriter();
+                        out.println("<script type=\"text/javascript\"> alert('Cap nhat thanh cong!'); location='list_account.jsp' </script>");
+                    } else {
+                        PrintWriter out = resp.getWriter();
+                        out.println("<script type=\"text/javascript\"> alert('Cap nhat khong thanh cong!'); location='update_account.jsp' </script>");
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
     }
 
@@ -63,15 +88,51 @@ public class ControllerServlet extends HttpServlet {
         HttpSession session = req.getSession(true);
         String action = req.getParameter("action");
         switch (action) {
-            case "listAllAccount":
+            case "listAccount":
                 try {
                     Account account = (Account) session.getAttribute("accountLogin");
-                    List<Account> list = accountRepository.getAllAccount();
+                    List<Account> list = accountRepository.getListAccount(account.getAccountId());
                     session.setAttribute("listAccount", list);
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
                 req.getRequestDispatcher("/list_account.jsp").forward(req, resp);
+                break;
+            case "listRole":
+                Account accountLogin = (Account) session.getAttribute("accountLogin");
+                try {
+                    List<Role> listRole = roleRepository.getListRoleForAccount(accountLogin.getAccountId());
+                    session.setAttribute("listRole", listRole);
+                } catch (SQLException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                req.getRequestDispatcher("/list_role.jsp").forward(req, resp);
+                break;
+            case "delete":
+                String accountID = req.getParameter("accountID");
+                try {
+                    boolean rs = accountRepository.deleteAccount(accountID);
+                    if (rs) {
+                        PrintWriter out = resp.getWriter();
+                        out.println("<script type=\"text/javascript\"> alert('Xoa thanh cong!'); </script>");
+                    } else {
+                        PrintWriter out = resp.getWriter();
+                        out.println("<script type=\"text/javascript\"> alert('Xoa khong thanh cong!'); </script>");
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                resp.sendRedirect("action?action=listAccount");
+                break;
+            case "update":
+                try {
+                    Account accountUpdate = accountRepository.findAccountByID(req.getParameter("accountID")).get();
+                    req.setAttribute("updateAccount", accountUpdate);
+                    req.getRequestDispatcher("/update_account.jsp").forward(req, resp);
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                resp.sendRedirect("action?action=listAccount");
                 break;
         }
     }
